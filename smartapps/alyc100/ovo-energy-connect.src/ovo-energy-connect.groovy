@@ -25,6 +25,9 @@
  *
  * 	11.11.2016
  *	v2.2.3 - Reduce number of calls to accounts API.
+ *
+ *	06.12.2016
+ *	v2.2.4 - Add offline/online API notification.
  */
 definition(
 		name: "OVO Energy (Connect)",
@@ -83,7 +86,7 @@ def firstPage() {
 
 def headerSECTION() {
 	return paragraph (image: "https://raw.githubusercontent.com/alyc100/SmartThingsPublic/master/smartapps/alyc100/icon175x175.jpeg",
-                  "OVO Energy (Connect)\nVersion: 2.2.2\nDate: 16082016(1100)")
+                  "OVO Energy (Connect)\nVersion: 2.2.3\nDate: 11112016(1100)")
 }               
 
 def stateTokenPresent() {
@@ -269,6 +272,14 @@ def evtHandler(evt) {
     else if (evt.name == "yesterdayTotalPower") {
     	msg = "${evt.displayName} total daily usage was ${evt.value} ${evt.unit} "
     	if (settings.sendDailyUsageSummary) generateNotification(msg)    
+    }
+    else if (evt.name == "costAlertLevelPassed" && evt.value == "offline") {
+    	msg = "${evt.displayName} is currently offline"
+        generateNotification(msg)
+    }
+    else if (evt.name == "costAlertLevelPassed" && evt.value == "online") {
+    	msg = "${evt.displayName} is back online"
+        generateNotification(msg)
     }
     else if (evt.name == "costAlertLevelPassed" && evt.value != "false") {
     	msg = "WARNING: ${evt.displayName} daily cost has exceeded ${evt.value}"
